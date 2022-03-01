@@ -78,7 +78,7 @@ class SL(QWidget):
         if sys.platform == "win32":
             open_path = os.getenv("appdata")
         else:
-            open_path = "HOME"
+            open_path = os.getenv("HOME")
         if os.path.exists(_path):
             open_path = _path
         return open_path
