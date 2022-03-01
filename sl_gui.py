@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 from PyQt5.QtWidgets import QWidget, QToolTip, QPushButton, QApplication, QHBoxLayout, QVBoxLayout, QMessageBox
 from PyQt5.QtGui import QFont
-from save_and_load import save, load, config_path, read_config
+from save_and_load import save, load, config_path, read_config, init_config
 
 
 # source_path, save_path, config,
@@ -13,12 +13,15 @@ class SL(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        init_config()
 
     def initUI(self):
         QToolTip.setFont(QFont("SansSerif", 10))
 
         s_btn = QPushButton("存档", self)
+        s_btn.setMinimumSize(200, 50)
         l_btn = QPushButton("读档", self)
+        l_btn.setMinimumSize(200, 50)
         source_path_btn = QPushButton("默认存档位置", self)
         save_path_btn = QPushButton("保存存档位置", self)
 
@@ -27,38 +30,31 @@ class SL(QWidget):
         source_path_btn.clicked.connect(self.config_source_path)
         save_path_btn.clicked.connect(self.config_save_path)
 
-        hbox = QHBoxLayout()
-        hbox.addWidget(s_btn)
-        hbox.addWidget(l_btn)
-
-        hbox.addWidget(source_path_btn)
-        hbox.addWidget(save_path_btn)
-
         vbox = QVBoxLayout()
-        vbox.addLayout(hbox)
-        self.setLayout(vbox)
+        vbox.addWidget(s_btn)
+        vbox.addWidget(l_btn)
+        vbox.addWidget(source_path_btn)
+        vbox.addWidget(save_path_btn)
+
+        hbox = QHBoxLayout()
+        hbox.addLayout(vbox)
+        self.setLayout(hbox)
 
         self.setGeometry(300, 300, 300, 200)
         self.setWindowTitle("SL")
         self.show()
 
     def save(self):
-        config = read_config()
-        source_path = config.get("config", "source_path")
-        save_path = config.get("config", "save_path")
-        if not source_path or not save_path:
-            self.err_event()
-        else:
+        try:
             save()
+        except Exception as e:
+            QMessageBox.question(self, "Message", str(e), QMessageBox.Close)
 
     def load(self):
-        config = read_config()
-        source_path = config.get("config", "source_path")
-        save_path = config.get("config", "save_path")
-        if not source_path or not save_path:
-            self.err_event()
-        else:
+        try:
             load()
+        except Exception as e:
+            QMessageBox.question(self, "Message", str(e), QMessageBox.Close)
 
     def config_source_path(self):
         config = read_config()
@@ -83,12 +79,12 @@ class SL(QWidget):
             open_path = os.getenv("appdata")
         else:
             open_path = "~"
-        if os.path.isdir(_path):
+        if os.path.exists(_path):
             open_path = _path
         return open_path
 
     def err_event(self):
-        reply = QMessageBox.question(self, "Message", "配置文件错误", QMessageBox.Close)
+        QMessageBox.question(self, "Message", "配置文件错误", QMessageBox.Close)
 
 
 if __name__ == '__main__':
