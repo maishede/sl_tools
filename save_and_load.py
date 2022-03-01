@@ -60,7 +60,7 @@ def init_config():
         create_config_file()
 
 
-def judge_config_path(source_path, save_path, module="save"):
+def judge_config_path(source_path, save_path):
     if not source_path and not save_path:
         raise Exception(f"请配置{SOURCE_PATH_NAME}路径\n请配置{SAVE_PATH_NAME}路径")
     if not save_path and source_path:
@@ -82,6 +82,7 @@ def judge_config_path(source_path, save_path, module="save"):
 
 def save():
     # 从源文件拷出到目标文件夹,同时备份一份到备份文件夹
+    # TODO 是否限制备份文件数量,防止占用过多磁盘,没想好怎么设计这个规则
     config = read_config()
     source_path = config.get("config", "source_path")
     save_path = config.get("config", "save_path")
