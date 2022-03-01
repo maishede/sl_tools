@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 from PyQt5.QtWidgets import QWidget, QToolTip, QPushButton, QApplication, QHBoxLayout, QVBoxLayout, QMessageBox
 from PyQt5.QtGui import QFont
-from save_and_load import save, load, config_path, read_config, init_config
+from save_and_load import save, load, config_path, read_config, init_config, SOURCE_PATH_NAME, SAVE_PATH_NAME
 
 
 # source_path, save_path, config,
@@ -22,8 +22,8 @@ class SL(QWidget):
         s_btn.setMinimumSize(200, 50)
         l_btn = QPushButton("读档", self)
         l_btn.setMinimumSize(200, 50)
-        source_path_btn = QPushButton("默认存档位置", self)
-        save_path_btn = QPushButton("保存存档位置", self)
+        source_path_btn = QPushButton(f"{SOURCE_PATH_NAME}路径", self)
+        save_path_btn = QPushButton(f"{SAVE_PATH_NAME}路径", self)
 
         s_btn.clicked.connect(self.save)
         l_btn.clicked.connect(self.load)
