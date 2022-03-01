@@ -52,6 +52,7 @@ def create_config_file():
     config.set("config", "save_path", "")
     config.set("config", "sl_suffix", ".sl2")
     config.set("config", "sl_bak_suffix", ".sl2.bak")
+    config.set("config", "max_bak_num", "10")
     config.write(open(config_path, "r+", encoding='utf8'))
 
 
@@ -92,6 +93,7 @@ def save():
     for file in files:
         copy_file(file, save_path)
         copy_file(file, bak_path)
+    delete_over_max_bak_files()
 
 
 def load():
@@ -103,3 +105,21 @@ def load():
     files = find_sl_files(save_path)
     for file in files:
         copy_file(file, source_path)
+
+
+def delete_over_max_bak_files():
+    # 删除超过文件数量上限的文件
+    config = read_config()
+    save_path = config.get("config", "save_path")
+    bak_path = os.path.join(save_path, bak_dir_name)
+    max_bak_num = config.get("config", "max_bak_num")
+    max_bak_num = int(max_bak_num)
+    paths = os.listdir(bak_path)
+    deleted_path = sorted(paths, reverse=True)[max_bak_num:]
+    for delete in deleted_path:
+        full_path = os.path.join(bak_path, delete)
+        shutil.rmtree(full_path)
+
+
+if __name__ == '__main__':
+    delete_over_max_bak_files()
