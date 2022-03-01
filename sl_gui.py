@@ -93,6 +93,8 @@ class SL(QWidget):
         text, isok = QtWidgets.QInputDialog.getText(self, "title", "备份文件数量:", QLineEdit.Normal, max_bak_num)
         # QInputDialog.getText()
         if isok and text and text.isdigit():
+            if int(text) < 0:
+                text = 0
             config.set("config", "max_bak_num", text)
             config.write(open(config_path, "r+", encoding="utf8"))
 
