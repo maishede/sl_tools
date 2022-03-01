@@ -2,7 +2,8 @@ import os.path
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
-from PyQt5.QtWidgets import QWidget, QToolTip, QPushButton, QApplication, QHBoxLayout, QVBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QWidget, QToolTip, QPushButton, QApplication, QHBoxLayout, QVBoxLayout, QMessageBox, \
+    QInputDialog, QLineEdit
 from PyQt5.QtGui import QFont
 from save_and_load import save, load, config_path, read_config, init_config, SOURCE_PATH_NAME, SAVE_PATH_NAME
 
@@ -24,17 +25,20 @@ class SL(QWidget):
         l_btn.setMinimumSize(200, 50)
         source_path_btn = QPushButton(f"{SOURCE_PATH_NAME}路径", self)
         save_path_btn = QPushButton(f"{SAVE_PATH_NAME}路径", self)
+        max_bak_btn = QPushButton(f"修改备份文件数量")
 
         s_btn.clicked.connect(self.save)
         l_btn.clicked.connect(self.load)
         source_path_btn.clicked.connect(self.config_source_path)
         save_path_btn.clicked.connect(self.config_save_path)
+        max_bak_btn.clicked.connect(self.modify_max_num)
 
         vbox = QVBoxLayout()
         vbox.addWidget(s_btn)
         vbox.addWidget(l_btn)
         vbox.addWidget(source_path_btn)
         vbox.addWidget(save_path_btn)
+        vbox.addWidget(max_bak_btn)
 
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)
@@ -83,8 +87,14 @@ class SL(QWidget):
             open_path = _path
         return open_path
 
-    def err_event(self):
-        QMessageBox.question(self, "Message", "配置文件错误", QMessageBox.Close)
+    def modify_max_num(self):
+        config = read_config()
+        max_bak_num = config.get("config", "max_bak_num")
+        text, isok = QtWidgets.QInputDialog.getText(self, "title", "备份文件数量:", QLineEdit.Normal, max_bak_num)
+        # QInputDialog.getText()
+        if isok and text and text.isdigit():
+            config.set("config", "max_bak_num", text)
+            config.write(open(config_path, "r+", encoding="utf8"))
 
 
 if __name__ == '__main__':
